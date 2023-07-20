@@ -1,0 +1,14 @@
+.searchArea {
+    display: flex;
+    justify-content: center;
+    margin-top: 5%;
+}
+
+.searchArea input {
+    width: 80%;
+    height: 40px;
+}
+
+.search_input::placeholder {
+    text-align: center;
+}
