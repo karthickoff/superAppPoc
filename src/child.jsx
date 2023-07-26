@@ -1,90 +1,57 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from 'react-redux';
 import { sendGetGroupsRequest, getWatchListSymbolData } from './utils/device-interface';
+import WatchListReducer from './reducers/watchListReducer';
 import "./css/watchlistHome.css"
 import searchImg from "./assets/images/search.png"
-const __internalWindow = window;
-var AndroidInterface = __internalWindow['Android'] ? __internalWindow['Android'] : {};
-let iosInterface = (window.webkit ? window.webkit.messageHandlers : {});
+
 
 export default function Child() {
     const navigate = useNavigate();
-    const [watchListNames, setWatchListNames] = useState([
-
-    ]);
-    const [stockdata, setStockData] = useState([
-    ])
+    const [check, setCheck] = useState("hi");
+    // let name = useRef(null)
+    const [watchListNames, setWatchListNames] = useState([]);
+    const [stockdata, setStockData] = useState([]);
+    const watchListReducerValues = useSelector(state => state.WatchListReducer);
+    console.log("reducer values  ", watchListReducerValues);
+    const watchListHeaderValues = watchListReducerValues ? watchListReducerValues.watchListHeaders : [];
+    const watchListSymbolValues = watchListReducerValues ? watchListReducerValues.watchListSymbols : []
+    console.log("watchListHeaderValues", watchListHeaderValues);
     useEffect(() => {
-        sendGetGroupsRequest() // check 
-        // iosInterface.sendGetGroupsRequest && iosInterface.sendGetGroupsRequest.postMessage("trail");
-        // AndroidInterface.sendGetGroupsRequest && AndroidInterface.sendGetGroupsRequest("trail");
+        setWatchListNames(watchListHeaderValues)
+        if (watchListHeaderValues && watchListHeaderValues.length) {
+            let req = JSON.stringify({
+                "wId": watchListHeaderValues[0].wId,
+            })
+            getWatchListSymbolData(req)
+        }
+
+
+    }, [watchListHeaderValues])
+    useEffect(() => {
+        setStockData(watchListSymbolValues)
+    }, [watchListSymbolValues])
+    useEffect(() => {
+        sendGetGroupsRequest();
         console.log("Message sent from web ");
         handleHeaderResponse()
-
     }, [])
+
     const getWatchListSymbolsData = (data) => {
-        console.log("inside  getWatchListSymbolData", data);
-        getWatchListSymbolData(data) //check 
-        // iosInterface.sendGetSymbolsRequest && iosInterface.sendGetSymbolsRequest.postMessage(data);
-        // AndroidInterface.sendGetSymbolsRequest && AndroidInterface.sendGetSymbolsRequest(data);
-        handleWatchListResponse()
+        getWatchListSymbolData(data)
     }
     const handleHeaderResponse = () => {
-        if (!window.hasOwnProperty('getGroupsResponse')) {
-            Object.defineProperty(window, 'getGroupsResponse', {
-                value: (response) => {
-                    console.log("getGroupsResponse function called in web ",);
-                    if (response) {
-                        let Grpresponse = JSON.parse(response)
-                        if (Grpresponse && Grpresponse.status) {
-                            console.log("inside success  Grpresponse.status");
-                            setWatchListNames(Grpresponse.data.watchlists);
-                            let headerArr = Grpresponse.data.watchlists;
-                            let req = JSON.stringify({
-                                "wId": headerArr[0].wId,
-                            })
-                            console.log("intial json ", req);
-                            getWatchListSymbolsData(req)
 
-                        }
-                        else {
-                            setWatchListNames([])
-                            console.log("inside failure  Grpresponse.status");
-                        }
-                    }
-
-                },
-                writable: false,
-            });
-        }
     }
     const handleWatchListClick = (id) => {
         let req = JSON.stringify({
             "wId": id,
         })
-        console.log("req", req);
         getWatchListSymbolsData(req)
-        handleWatchListResponse()
 
     }
-    const handleWatchListResponse = () => {
-        if (!window.hasOwnProperty('getWatchListSymbolsResponse')) {
-            Object.defineProperty(window, 'getWatchListSymbolsResponse', {
-                value: (response) => {
-                    console.log("getWatchListSymbolsResponse function called in web ", response);
-                    let watchListrRes = JSON.parse(response);
-                    if (watchListrRes.status) {
-                        setStockData(watchListrRes.data.symbols)
 
-                    } else {
-                        console.log("inside failure getWatchListSymbolsResponse.status");
-                    }
-
-                },
-                writable: false,
-            });
-        }
-    }
     const handleNav = () => {
         navigate('/search')
     }
@@ -108,6 +75,7 @@ export default function Child() {
             <div className='stockDataParent'>
                 {stockdata && stockdata.length > 0 && stockdata.map((item) => {
                     return <div className='stockConatiner'>
+                        {console.log("inside data  stock div")}
                         <div className="firstRow">
                             <div className="symbol">{item.symbol}</div>
                             <div className="num1">..</div>

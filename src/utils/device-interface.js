@@ -1,3 +1,7 @@
+import React from "react";
+import { useDispatch } from 'react-redux';
+
+import { storewatchlistHeaders, storewatchlistSymbols, storewatchlistSearchSymbols } from "../actions/watchListAction";
 class DeviceIdentifier {
     constructor() {
         this._userAgent = navigator.userAgent || "";
@@ -59,3 +63,70 @@ export function searchwatchListSymbolsRequest(req) {
         AndroidInterface.sendSearchSymbolsRequest && AndroidInterface.sendSearchSymbolsRequest(req);
     }
 }
+
+export function GetGroupsResponseHeader() {
+    const dispatch = useDispatch();
+    if (!window.hasOwnProperty('getWatchListSymbolsResponse')) {
+        Object.defineProperty(window, 'getGroupsResponse', {
+            value: (response) => {
+                console.log("getGroupsResponse function called in web ",);
+                if (response) {
+                    let Grpresponse = JSON.parse(response)
+                    if (Grpresponse && Grpresponse.status) {
+                        dispatch(storewatchlistHeaders(Grpresponse.data.watchlists))
+                    }
+                    else {
+                        console.log("inside failure  Grpresponse.status");
+                    }
+                }
+
+            },
+            writable: false,
+        });
+    }
+    else {
+        console.log("showing Cannot redefine property: getGroupsResponse");
+    }
+}
+
+export function HandleWatchListResponse() {
+    const dispatch = useDispatch();
+
+    if (!window.hasOwnProperty('getWatchListSymbolsResponse')) {
+        Object.defineProperty(window, 'getWatchListSymbolsResponse', {
+            value: (response) => {
+                console.log("getWatchListSymbolsResponse function called in web ", response);
+                let watchListrRes = JSON.parse(response);
+                if (watchListrRes.status) {
+                    dispatch(storewatchlistSymbols(watchListrRes.data.symbols))
+                } else {
+                    dispatch(storewatchlistSymbols([]))
+                    console.log("inside failure getWatchListSymbolsResponse.status");
+                }
+
+            },
+            writable: false,
+        });
+    }
+    else {
+        console.log("showing Cannot redefine property: getWatchListSymbolsResponse ",);
+    }
+}
+export function HandleSearchSymbols() {
+    const dispatch = useDispatch();
+    if (!window.hasOwnProperty('getSearchSymbolsResponse')) {
+        Object.defineProperty(window, 'getSearchSymbolsResponse', {
+            value: (res) => {
+                console.log("getSearchSymbolsResponse function called in web ", res);
+                let response = JSON.parse(res)
+                dispatch(storewatchlistSearchSymbols(response.data.symbols))
+            },
+            writable: false,
+        });
+    }
+    else {
+        console.log("showing Cannot redefine property: getSearchSymbolsResponse ");
+    }
+}
+
+

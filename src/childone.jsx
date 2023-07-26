@@ -1,38 +1,49 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SearchBar from './components/searchBar';
 import { searchwatchListSymbolsRequest } from './utils/device-interface';
+import { storewatchlistSearchSymbols } from './actions/watchListAction';
+import WatchListReducer from './reducers/watchListReducer';
+import { useSelector, useDispatch } from 'react-redux';
+import SearchBar from './components/searchBar';
 import BackImg from "./assets/images/left-arrow.png";
 import "./css/searchScreen.css"
 
 export default function SearchComp() {
     const [stockList, setStockList] = useState([])
+    const watchListReducerValues = useSelector(state => state.WatchListReducer);
+    const searchWatchListSymbolValues = watchListReducerValues ? watchListReducerValues.searchedWatchListSymbol : [];
+    console.log("searchWatchListSymbolValues", searchWatchListSymbolValues);
+    useEffect(() => {
+        dispatch(storewatchlistSearchSymbols([]))
+    }, [])
+    useEffect(() => {
+        if (searchWatchListSymbolValues && searchWatchListSymbolValues.length)
+            setStockList(searchWatchListSymbolValues)
+    }, [searchWatchListSymbolValues])
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const handleSearchInput = (e) => {
-        console.log("eeeeeeeeeeeeeeeeee", e.target.name, e.target.value);
-        if ((e.target.value).length > 1) {
+        if ((e.target.value) && (e.target.value).length > 1) {
             let req = JSON.stringify({
                 'symbol': (e.target.value).toUpperCase()
             })
             console.log("req", req);
             searchwatchListSymbolsRequest(req);
-            if (!window.hasOwnProperty('getSearchSymbolsResponse')) {
-                Object.defineProperty(window, 'getSearchSymbolsResponse', {
-                    value: (res) => {
-                        console.log("getSearchSymbolsResponse function called in web ", res);
-                        let response = JSON.parse(res)
-                        setStockList(response.data.symbols)
-                        // return JSON.parse(response);
-                    },
-                    writable: false,
-                });
-            }
         }
+        else {
+            setStockList([])
+            dispatch(storewatchlistSearchSymbols([]))
+        }
+    }
+    const handleBack = () => {
+        dispatch(storewatchlistSearchSymbols([]))
+        navigate(-1)
+
     }
     return (
         <div>
             <div className="searchHeader">
-                <div className="searchBack" onClick={() => navigate(-1)}>
+                <div className="searchBack" onClick={handleBack}>
                     <img src={BackImg} />
                 </div>
                 <div className="searchBanner">
@@ -49,7 +60,7 @@ export default function SearchComp() {
 
                     </div>
                 })}
-                {stockList.length == 0 ?
+                {stockList && stockList.length == 0 ?
                     <div className='empty_stockData'>
                         <p>search stock  to Display</p>
                     </div> : ''}

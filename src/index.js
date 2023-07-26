@@ -4,12 +4,23 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { HashRouter as Router, } from 'react-router-dom';
+import store from './rootreducer';
+import { Provider } from 'react-redux';
+var globalThis = require('globalthis/polyfill')();
+var assert = require('assert');
 
+// the below function is not CSP-compliant, but reliably gets the
+// global object in sloppy mode in every engine.
+var getGlobal = Function('return this');
+
+assert.equal(globalThis, getGlobal());
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <Router>
-    <App />
-  </Router>
+  <Provider store={store}>
+    <Router>
+      <App />
+    </Router>
+  </Provider>
 
 );
 
