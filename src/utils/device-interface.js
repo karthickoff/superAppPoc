@@ -1,7 +1,6 @@
 import React from "react";
 import { useDispatch } from 'react-redux';
-
-import { storewatchlistHeaders, storewatchlistSymbols, storewatchlistSearchSymbols } from "../actions/watchListAction";
+import { storewatchlistHeaders, storewatchlistSymbols, storewatchlistSearchSymbols } from "../redux/actions/watchListAction";
 class DeviceIdentifier {
     constructor() {
         this._userAgent = navigator.userAgent || "";

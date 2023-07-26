@@ -1,11 +1,9 @@
-import React, { lazy } from 'react';
+import React from 'react';
 import { Routes, Route } from "react-router-dom"
-import logo from './logo.svg';
-import './App.css';
-import Child from './child';
-import SearchComp from './childone';
+import WatchListDashboardScreen from './pages/watchListDashboard';
+import WatchListSearchScreen from './pages/watchListSearch';
 import { GetGroupsResponseHeader, HandleWatchListResponse, HandleSearchSymbols } from './utils/device-interface';
-// const Childone = React.lazy(() => import('./childone'))
+import './App.css';
 
 function App() {
   GetGroupsResponseHeader(); // 
@@ -15,8 +13,8 @@ function App() {
   return (
     // <div className="App">
     <Routes>
-      <Route path="/" element={<Child />} />
-      <Route path="/search" element={<SearchComp />} />
+      <Route path="/" element={<WatchListDashboardScreen />} />
+      <Route path="/search" element={<WatchListSearchScreen />} />
     </Routes>
     // </div>
   );

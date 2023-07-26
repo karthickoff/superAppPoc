@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { HashRouter as Router, } from 'react-router-dom';
-import store from './rootreducer';
+import store from './redux/rootreducer';
 import { Provider } from 'react-redux';
 var globalThis = require('globalthis/polyfill')();
 var assert = require('assert');
