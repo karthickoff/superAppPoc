@@ -1,23 +1,30 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from 'react-redux';
-import { sendGetGroupsRequest, getWatchListSymbolData } from '../utils/device-interface';
 import WatchListReducer from '../redux/reducers/watchListReducer';
-import "../css/watchlistHome.css"
+import AppReducer from '../redux/reducers/appReducer';
+import "../css/watchlistHome.css";
+import { sendGetGroupsRequest, getWatchListSymbolData, sendTheme } from '../utils/device-interface';
+
 import searchImg from "../assets/images/search.png";
 
 
 export default function WatchListDashboardScreen() {
     const navigate = useNavigate();
-    const [check, setCheck] = useState("hi");
-    // let name = useRef(null)
     const [watchListNames, setWatchListNames] = useState([]);
     const [stockdata, setStockData] = useState([]);
+    const appReducerValues = useSelector(state => state.AppReducer);
+    const [appTheme, setAppTheme] = useState({});
     const watchListReducerValues = useSelector(state => state.WatchListReducer);
-    console.log("reducer values  ", watchListReducerValues);
     const watchListHeaderValues = watchListReducerValues ? watchListReducerValues.watchListHeaders : [];
-    const watchListSymbolValues = watchListReducerValues ? watchListReducerValues.watchListSymbols : []
-    console.log("watchListHeaderValues", watchListHeaderValues);
+    const watchListSymbolValues = watchListReducerValues ? watchListReducerValues.watchListSymbols : [];
+    const appThemeValues = appReducerValues.appTheme;
+    console.log("appThemeValues", appThemeValues);
+    useEffect(() => {
+        console.log("inside comp recieved appTheme");
+        setAppTheme(appThemeValues)
+    }, [appThemeValues])
+
     useEffect(() => {
         setWatchListNames(watchListHeaderValues)
         if (watchListHeaderValues && watchListHeaderValues.length) {
@@ -35,15 +42,14 @@ export default function WatchListDashboardScreen() {
     useEffect(() => {
         sendGetGroupsRequest();
         console.log("Message sent from web ");
-        handleHeaderResponse()
+        sendTheme()
+        console.log('message sent from web for theme');
     }, [])
 
     const getWatchListSymbolsData = (data) => {
         getWatchListSymbolData(data)
     }
-    const handleHeaderResponse = () => {
 
-    }
     const handleWatchListClick = (id) => {
         let req = JSON.stringify({
             "wId": id,
@@ -56,10 +62,10 @@ export default function WatchListDashboardScreen() {
         navigate('/search')
     }
     return (
-        <div>
-            <div className="headerWatchList">
+        <div style={appTheme}>
+            <div className="headerWatchList" >
                 <div className="headingWatchlist">
-                    <h4>WatchList Component</h4>
+                    <h4 >WatchList Component</h4>
                 </div>
                 <div className="headingSearch" onClick={handleNav}>
                     <img src={searchImg} alt='search-icon' />
@@ -93,6 +99,6 @@ export default function WatchListDashboardScreen() {
                     <p>No Stocks to Display </p>
                 </div>}
             </div>
-        </div>
+        </div >
     )
 }

@@ -1,6 +1,7 @@
 import React from "react";
 import { useDispatch } from 'react-redux';
 import { storewatchlistHeaders, storewatchlistSymbols, storewatchlistSearchSymbols } from "../redux/actions/watchListAction";
+import { storeAppTheme } from "../redux/actions/themeAction";
 class DeviceIdentifier {
     constructor() {
         this._userAgent = navigator.userAgent || "";
@@ -40,6 +41,18 @@ export function sendGetGroupsRequest() {
     }
     return true;
 }
+export function sendTheme() {
+    if (deviceIdentifier.isIos) {
+        console.log('sendTheme entered')
+        iosInterface.sendTheme && iosInterface.sendTheme.postMessage("");
+        // intializeGlobalVariable()
+    } else if (deviceIdentifier.isAndroid) {
+        console.log('sendTheme entered android')
+        AndroidInterface.sendTheme && AndroidInterface.sendTheme("");
+    }
+    return true;
+}
+
 
 export function getWatchListSymbolData(req) {
     if (deviceIdentifier.isIos) {
@@ -127,5 +140,22 @@ export function HandleSearchSymbols() {
         console.log("showing Cannot redefine property: getSearchSymbolsResponse ");
     }
 }
+export function HandleTheme() {
+    const dispatch = useDispatch();
+    if (!window.hasOwnProperty('getTheme')) {
+        Object.defineProperty(window, 'getTheme', {
+            value: (res) => {
+                console.log("getTheme function called in web ", res);
+                let response = JSON.parse(res)
+                dispatch(storeAppTheme(response))
+            },
+            writable: false,
+        });
+    }
+    else {
+        console.log("showing Cannot redefine property: handleTheme ");
+    }
+}
+
 
 
