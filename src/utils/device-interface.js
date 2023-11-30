@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch } from 'react-redux';
 import { storewatchlistHeaders, storewatchlistSymbols, storewatchlistSearchSymbols } from "../redux/actions/watchListAction";
-import { storeAppTheme } from "../redux/actions/themeAction";
+import { storeAppTheme, storeDarkAppTheme, storeLightAppTheme } from "../redux/actions/themeAction";
 class DeviceIdentifier {
     constructor() {
         this._userAgent = navigator.userAgent || "";
@@ -147,7 +147,20 @@ export function HandleTheme() {
             value: (res) => {
                 console.log("getTheme function called in web ", res);
                 let response = JSON.parse(res)
-                dispatch(storeAppTheme(response))
+                if (response.theme == 'custom') {
+                    console.log('inside custom ');
+                    dispatch(storeAppTheme(response.data))
+
+                }
+                else if (response.theme == 'light') {
+                    console.log("inside light ");
+                    dispatch(storeLightAppTheme())
+                }
+                else {
+                    console.log("inside dark ");
+                    dispatch(storeDarkAppTheme())
+
+                }
             },
             writable: false,
         });

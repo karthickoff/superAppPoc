@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from "react-router-dom";
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import WatchListReducer from '../redux/reducers/watchListReducer';
 import AppReducer from '../redux/reducers/appReducer';
 import "../css/watchlistHome.css";
 import { sendGetGroupsRequest, getWatchListSymbolData, sendTheme } from '../utils/device-interface';
 
 import searchImg from "../assets/images/search.png";
+import { storeDarkAppTheme, storeLightAppTheme } from '../redux/actions/themeAction';
 
 
 export default function WatchListDashboardScreen() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [watchListNames, setWatchListNames] = useState([]);
     const [stockdata, setStockData] = useState([]);
     const appReducerValues = useSelector(state => state.AppReducer);
@@ -44,6 +46,7 @@ export default function WatchListDashboardScreen() {
         console.log("Message sent from web ");
         sendTheme()
         console.log('message sent from web for theme');
+        // dispatch(storeLightAppTheme())
     }, [])
 
     const getWatchListSymbolsData = (data) => {
